@@ -1,0 +1,184 @@
+definitions:
+  model.BatchRequest:
+    properties:
+      emails:
+        items:
+          $ref: '#/definitions/model.EmailRequest'
+        type: array
+      sms:
+        items:
+          $ref: '#/definitions/model.SMSRequest'
+        type: array
+    type: object
+  model.BatchResponse:
+    properties:
+      errors:
+        example:
+        - '["邮箱格式错误"'
+        - ' "手机号无效"]'
+        items:
+          type: string
+        type: array
+      failed:
+        example: 2
+        type: integer
+      message:
+        example: 批量发送完成,部分失败
+        type: string
+      total:
+        example: 20
+        type: integer
+    type: object
+  model.EmailRequest:
+    properties:
+      body:
+        example: 你好，欢迎使用我们的平台
+        type: string
+      is_html:
+        example: true
+        type: boolean
+      provider:
+        description: 指定邮件提供商
+        example: account
+        type: string
+      subject:
+        example: 欢迎使用系统
+        type: string
+      to:
+        example:
+        - user@example.com
+        items:
+          type: string
+        type: array
+    required:
+    - body
+    - subject
+    - to
+    type: object
+  model.ErrorResponse:
+    properties:
+      error:
+        example: '请求参数错误: 缺少字段 subject'
+        type: string
+    type: object
+  model.SMSRequest:
+    properties:
+      params:
+        additionalProperties:
+          type: string
+        example:
+          '{"code"': '"1234"}'
+        type: object
+      phone_number:
+        example: "13800138000"
+        type: string
+      provider:
+        example: tencent
+        type: string
+      template_id:
+        example: SMS_123456
+        type: string
+    required:
+    - phone_number
+    - template_id
+    type: object
+  model.SuccessResponse:
+    properties:
+      message:
+        example: 操作成功
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /notification/batch:
+    post:
+      consumes:
+      - application/json
+      description: 批量发送邮件和短信，返回发送结果统计
+      parameters:
+      - description: 批量发送请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.BatchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 批量全部成功
+          schema:
+            $ref: '#/definitions/model.BatchResponse'
+        "206":
+          description: 部分失败
+          schema:
+            $ref: '#/definitions/model.BatchResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: 批量发送通知
+      tags:
+      - Notification
+  /notification/email:
+    post:
+      consumes:
+      - application/json
+      description: 发送单封邮件，可指定邮件提供商或使用默认启用的
+      parameters:
+      - description: 邮件发送请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.EmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 邮件发送成功
+          schema:
+            $ref: '#/definitions/model.SuccessResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: 发送邮件失败
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: 发送邮件
+      tags:
+      - Notification
+  /notification/sms:
+    post:
+      consumes:
+      - application/json
+      description: 发送单条短信，可指定短信服务商
+      parameters:
+      - description: 短信发送请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.SMSRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 短信发送成功
+          schema:
+            $ref: '#/definitions/model.SuccessResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: 发送短信失败
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: 发送短信
+      tags:
+      - Notification
+swagger: "2.0"

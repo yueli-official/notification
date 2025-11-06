@@ -1,0 +1,276 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/notification/batch": {
+            "post": {
+                "description": "批量发送邮件和短信，返回发送结果统计",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Notification"
+                ],
+                "summary": "批量发送通知",
+                "parameters": [
+                    {
+                        "description": "批量发送请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "批量全部成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BatchResponse"
+                        }
+                    },
+                    "206": {
+                        "description": "部分失败",
+                        "schema": {
+                            "$ref": "#/definitions/model.BatchResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/notification/email": {
+            "post": {
+                "description": "发送单封邮件，可指定邮件提供商或使用默认启用的",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Notification"
+                ],
+                "summary": "发送邮件",
+                "parameters": [
+                    {
+                        "description": "邮件发送请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EmailRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "邮件发送成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "发送邮件失败",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/notification/sms": {
+            "post": {
+                "description": "发送单条短信，可指定短信服务商",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Notification"
+                ],
+                "summary": "发送短信",
+                "parameters": [
+                    {
+                        "description": "短信发送请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SMSRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "短信发送成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "发送短信失败",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.BatchRequest": {
+            "type": "object",
+            "properties": {
+                "emails": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EmailRequest"
+                    }
+                },
+                "sms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SMSRequest"
+                    }
+                }
+            }
+        },
+        "model.BatchResponse": {
+            "type": "object",
+            "properties": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"邮箱格式错误\"",
+                        " \"手机号无效\"]"
+                    ]
+                },
+                "failed": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "message": {
+                    "type": "string",
+                    "example": "批量发送完成,部分失败"
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 20
+                }
+            }
+        },
+        "model.EmailRequest": {
+            "type": "object",
+            "required": [
+                "body",
+                "subject",
+                "to"
+            ],
+            "properties": {
+                "body": {
+                    "type": "string",
+                    "example": "你好，欢迎使用我们的平台"
+                },
+                "is_html": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "provider": {
+                    "description": "指定邮件提供商",
+                    "type": "string",
+                    "example": "account"
+                },
+                "subject": {
+                    "type": "string",
+                    "example": "欢迎使用系统"
+                },
+                "to": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "user@example.com"
+                    ]
+                }
+            }
+        },
+        "model.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "请求参数错误: 缺少字段 subject"
+                }
+            }
+        },
+        "model.SMSRequest": {
+            "type": "object",
+            "required": [
+                "phone_number",
+                "template_id"
+            ],
+            "properties": {
+                "params": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "{\"code\"": "\"1234\"}"
+                    }
+                },
+                "phone_number": {
+                    "type": "string",
+                    "example": "13800138000"
+                },
+                "provider": {
+                    "type": "string",
+                    "example": "tencent"
+                },
+                "template_id": {
+                    "type": "string",
+                    "example": "SMS_123456"
+                }
+            }
+        },
+        "model.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "操作成功"
+                }
+            }
+        }
+    }
+}

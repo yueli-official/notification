@@ -1,0 +1,4 @@
+config.yaml
+config.toml
+*exe*
+.vscode
