@@ -41,5 +41,5 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/yuelioi/yueling-tg:latest
+          tags: ghcr.io/yueli-official/notification:latest
           platforms: linux/amd64,linux/arm64
