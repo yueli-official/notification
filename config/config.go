@@ -2,6 +2,9 @@ package config
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/spf13/viper"
 )
@@ -36,21 +39,29 @@ type SMSProvider struct {
 }
 
 func LoadConfig() (*Config, error) {
-	viper.SetConfigName("config")
-	viper.AddConfigPath(".")
-	viper.AddConfigPath("./config")
 
-	// 设置环境变量
+	wd, _ := os.Getwd()
+
+	parent := filepath.Dir(wd) // 获取上一级目录
+
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")                             // 当前目录
+	viper.AddConfigPath("./config")                      // 当前目录下的 config/
+	viper.AddConfigPath(parent)                          // 上一级目录
+	viper.AddConfigPath(filepath.Join(parent, "config")) // 上级目录的 config/
+
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, fmt.Errorf("读取配置文件失败: %w", err)
 	}
 
-	var config Config
-	if err := viper.Unmarshal(&config); err != nil {
+	var cfg Config
+	if err := viper.Unmarshal(&cfg); err != nil {
 		return nil, fmt.Errorf("解析配置失败: %w", err)
 	}
 
-	return &config, nil
+	log.Printf("使用的配置文件: %s", viper.ConfigFileUsed())
+
+	return &cfg, nil
 }

@@ -44,7 +44,7 @@ func main() {
 	// 启动服务
 	port := cfg.Server.Port
 	if port == "" {
-		port = "8080"
+		port = "9000"
 	}
 
 	log.Printf("通知系统启动在端口: %s", port)
