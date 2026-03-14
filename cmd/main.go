@@ -4,6 +4,7 @@ import (
 	"log"
 	"notification/config"
 	"notification/handler"
+	"notification/middleware"
 	"notification/service"
 
 	"github.com/gin-gonic/gin"
@@ -34,11 +35,11 @@ func main() {
 	notificationHandler := handler.NewNotificationHandler(notificationService)
 
 	api := r.Group("/api/v1")
+	api.Use(middleware.APIKeyAuth(cfg.Server.APIKey))
 	{
 		api.POST("/notify/email", notificationHandler.SendEmail)
 		api.POST("/notify/sms", notificationHandler.SendSMS)
 		api.POST("/notify/batch", notificationHandler.SendBatch)
-
 	}
 
 	// 启动服务

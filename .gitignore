@@ -1,4 +1,5 @@
 config.yaml
 config.toml
 *exe*
+*debug*
 .vscode

@@ -1,0 +1,45 @@
+[server]
+port = "9000"
+# API Key 用于接口认证，可通过请求头 X-API-Key 或 Cookie api_key 传入
+api_key = "your-secret-api-key-here"
+
+# 邮件配置（支持多个，通过 name 区分）
+# enabled = false 时该提供商不会被使用
+# 未指定 provider 时，默认使用第一个 enabled = true 的配置
+
+[[email]]
+name = "account"
+host = "smtp.example.com"
+port = 465
+username = "account@example.com"
+password = "your-smtp-password"
+from = "你的应用 | 账户服务"
+enabled = true
+
+[[email]]
+name = "notify"
+host = "smtp.example.com"
+port = 465
+username = "notify@example.com"
+password = "your-smtp-password"
+from = "你的应用 | 通知"
+enabled = true
+
+# 短信配置（支持多个，通过 name 区分）
+# provider 支持：aliyun、tencent
+
+[[sms]]
+name = "tencent"
+provider = "tencent"
+access_key = "your-tencent-access-key"
+secret_key = "your-tencent-secret-key"
+sign_name = "你的签名"
+enabled = true
+
+[[sms]]
+name = "aliyun"
+provider = "aliyun"
+access_key = "your-aliyun-access-key"
+secret_key = "your-aliyun-secret-key"
+sign_name = "你的签名"
+enabled = false

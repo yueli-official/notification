@@ -16,7 +16,8 @@ type Config struct {
 }
 
 type Server struct {
-	Port string `mapstructure:"port"`
+	Port   string `mapstructure:"port"`
+	APIKey string `mapstructure:"api_key"`
 }
 
 type EmailProvider struct {
